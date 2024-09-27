@@ -19,6 +19,12 @@ namespace SocialNetworkKata
             private set => _messages = value.ToList();
         }
 
+        private List<Person> _subscribers { get; set; } = new();
+        public IReadOnlyCollection<Person> Subscribers
+        {
+            get => _subscribers.ToImmutableList();
+            private set => _subscribers = value.ToList();
+        }
         public TimeLine(Person owner)
         {
             _messages = new List<Message>();
@@ -28,6 +34,13 @@ namespace SocialNetworkKata
         {
             _messages.Add(new Message( message));
             return true;
+        }
+        public void Subscribe(Person person)
+        {
+            if(!_subscribers.Any(p => p == person))
+            {
+                _subscribers.Add(new Person(person.Name));
+            }
         }
         
     }

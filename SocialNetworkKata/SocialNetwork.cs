@@ -41,5 +41,20 @@ namespace SocialNetworkKata
             }
             return _TimeLines.First(t => t.Owner == person);
         }
+
+        public bool Subscribe(Person charlie, TimeLine aliceTimeLine)
+        {
+            if (Read(aliceTimeLine.Owner) == null)
+            {
+                return false;
+            }
+            aliceTimeLine.Subscribe(charlie);
+            return true;
+        }
+
+        public List<TimeLine> ListSubscriptions(Person charlie)
+        {
+            return _TimeLines.FindAll(t => t.Subscribers.Contains(charlie));
+        }
     }
 }
