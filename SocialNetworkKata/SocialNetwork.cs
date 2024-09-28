@@ -42,13 +42,14 @@ namespace SocialNetworkKata
             return _TimeLines.First(t => t.Owner == person);
         }
 
-        public bool Subscribe(Person charlie, TimeLine aliceTimeLine)
+        public bool Follow(Person follower, Person followed)
         {
-            if (Read(aliceTimeLine.Owner) == null)
+            TimeLine followedTimeLine = Read(followed);
+            if (followedTimeLine == null)
             {
                 return false;
             }
-            aliceTimeLine.Subscribe(charlie);
+            followedTimeLine.Subscribe(follower);
             return true;
         }
 
