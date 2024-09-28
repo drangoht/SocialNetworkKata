@@ -9,6 +9,7 @@ sn.Post(elodie, "Hello, c'est Elo");
 sn.Post(bob, "Yo, c'est Bob");
 sn.Follow(greg, elodie);
 sn.Follow(greg, bob);
+
 var subs = sn.ListSubscriptions(greg);
 foreach( var tl in subs)
 {
