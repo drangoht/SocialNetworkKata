@@ -10,52 +10,66 @@ namespace SocialNetworkKata
 {
     public class SocialNetwork
     {
-        private List<TimeLine> _TimeLines { get; set; } = new();
-        public IReadOnlyCollection<TimeLine> TimeLines
+        private List<User> _users { get; set; } = new();
+        public IReadOnlyCollection<User> Users
         {
-            get => _TimeLines.ToImmutableList();
-            private set => _TimeLines = value.ToList();
+            get => _users.ToImmutableList();
+            private set => _users = value.ToList();
         }
         
         public SocialNetwork()
         {
         }
 
-        public bool Post(Person person, string message)
+        public void AddUser(User user)
         {
-            TimeLine timeLine = Read(person);
-            if (timeLine == null)
-            {
-                timeLine = new TimeLine(person);
-            }
-            timeLine.AddMessage(message);
-            _TimeLines.Add(timeLine);
-            return true;
+            _users.Add(user);
         }
 
-        public TimeLine Read(Person person)
+        public TimeLine Read(User person)
         {
-            if (!_TimeLines.Any(t => t.Owner == person))
+            User? user = GetUser(person);
+            if (user is null)
             {
-                return null;
+                return new TimeLine(person);
             }
-            return _TimeLines.First(t => t.Owner == person);
+            return user.TimeLine;
         }
 
-        public bool Follow(Person follower, Person followed)
+        public bool Post(User user, string message)
         {
-            TimeLine followedTimeLine = Read(followed);
-            if (followedTimeLine == null)
+            User? userToPost = GetUser(user);
+            if (userToPost is null)
             {
                 return false;
             }
-            followedTimeLine.Subscribe(follower);
+            userToPost.Post(message);
             return true;
         }
 
-        public List<TimeLine> ListSubscriptions(Person charlie)
+        public bool Follow(User follower, User followed)
         {
-            return _TimeLines.FindAll(t => t.Subscribers.Contains(charlie));
+            User? user = GetUser(followed);
+            if (user is null)
+            {
+                return false;
+            }
+            follower.AddSubscription(followed);
+            return true;
+        }
+
+        public List<TimeLine> ListSubscriptions(User user)
+        {
+            User? userInNetwork = GetUser(user);
+            if (userInNetwork is null)
+            {
+                return new();
+            }
+            return userInNetwork.FollowedUsers.Select(f => f.TimeLine).ToList();
+        }
+        private User? GetUser(User user)
+        {
+            return _users.FirstOrDefault(u => u.Name == user.Name);
         }
     }
 }

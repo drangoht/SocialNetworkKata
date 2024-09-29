@@ -14,7 +14,8 @@ namespace SocialNetworkKata.Tests
         public void AsAliceShouldPostMessageOnTimeLine()
         {
             string message = "This is a message";
-            Person alice = new Person("Alice");
+            User alice = new User("Alice");
+            _sut.AddUser(alice);
             bool messagePosted = _sut.Post(alice,message);
             Assert.True(messagePosted);
         }
@@ -23,11 +24,13 @@ namespace SocialNetworkKata.Tests
         public void AsBobShouldReadAlicePostOnTimeLine()
         {
             string message = "This is a message";
-            Person alice = new Person("Alice");
+            User alice = new User("Alice");
+            _sut.AddUser(alice);
             bool messagePosted = _sut.Post(alice, message);
             Assert.True(messagePosted);
 
-            Person bob = new Person("Bob");
+            User bob = new User("Bob");
+            _sut.AddUser(bob);
             TimeLine aliceTimeLine = _sut.Read(alice);
             Assert.Contains(message,aliceTimeLine.Messages.Select(m => m.Msg));
         }
@@ -37,9 +40,12 @@ namespace SocialNetworkKata.Tests
         {
             string aliceMessage = "This is Alice Message";
             string bobMessage = "This is Bob message";
-            Person alice = new Person("Alice");
-            Person bob = new Person("Bob");
-            Person charlie = new Person("Charlie");
+            User alice = new User("Alice");
+            User bob = new User("Bob");
+            User charlie = new User("Charlie");
+            _sut.AddUser(alice);
+            _sut.AddUser(bob);
+            _sut.AddUser(charlie);
 
             bool messagePosted = _sut.Post(alice, aliceMessage);
             Assert.True(messagePosted);

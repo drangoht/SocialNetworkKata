@@ -1,9 +1,13 @@
 ﻿using SocialNetworkKata;
 
 var sn = new SocialNetwork();
-var greg = new Person("Greg");
-var elodie = new Person("Elodie");
-var bob = new Person("Bob");
+var greg = new User("Greg");
+var elodie = new User("Elodie");
+var bob = new User("Bob");
+sn.AddUser(greg);
+sn.AddUser(elodie);
+sn.AddUser(bob);
+
 sn.Post(greg, "Bonjour, c'est Greg");
 sn.Post(elodie, "Hello, c'est Elo");
 sn.Post(bob, "Yo, c'est Bob");
