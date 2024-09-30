@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,19 +25,40 @@ namespace SocialNetworkKata
             private set => _followedUsers = value.ToList();
         }
 
+        private List<PrivateMessage> _privateMessages { get; set; } = new();
+        public IReadOnlyCollection<PrivateMessage> PrivateMessages
+        {
+            get => _privateMessages.ToImmutableList();
+            private set => _privateMessages = value.ToList();
+        }
+
+        private List<Mention> _mentions { get; set; } = new();
+        public IReadOnlyCollection<Mention> Mentions
+        {
+            get => _mentions.ToImmutableList();
+            private set => _mentions = value.ToList();
+        }
 
 
         public void AddSubscription(User person)
         {
             if (!_followedUsers.Any(p => p.Name == person.Name))
             {
-                _followedUsers.Add(new User(person.Name));
+                _followedUsers.Add(person);
             }
         }
 
-        public bool Post(string message)
+        public void AddPrivateMessage(User person,Message message)
+        {
+            _privateMessages.Add(new(person, message));
+        }
+        public bool Post(Message message)
         {
             return TimeLine.AddMessage(message);
+        }
+        public void AddMention(User user,Message message)
+        {
+            _mentions.Add(new(user, message));
         }
     }
 }

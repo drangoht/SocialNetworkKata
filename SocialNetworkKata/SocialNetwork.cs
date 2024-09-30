@@ -36,16 +36,18 @@ namespace SocialNetworkKata
             return user.TimeLine;
         }
 
-        public bool Post(User user, string message)
+        public Message Post(User user, Message message)
         {
             User? userToPost = GetUser(user);
             if (userToPost is null)
             {
-                return false;
+                return new(string.Empty);
             }
+            Mention(user,message);
             userToPost.Post(message);
-            return true;
+            return message;
         }
+        
 
         public bool Follow(User follower, User followed)
         {
@@ -66,6 +68,28 @@ namespace SocialNetworkKata
                 return new();
             }
             return userInNetwork.FollowedUsers.Select(f => f.TimeLine).ToList();
+        }
+
+        public void DirectMessage(User sender, User receiver, Message message)
+        {
+            User? userInNetwork = GetUser(receiver);
+            if (userInNetwork is null)
+            {
+                return;
+            }
+            receiver.AddPrivateMessage(sender,message);
+        }
+
+        private void Mention(User user, Message message)
+        {
+            foreach (var mentionnedUserName in message.MentionnedUserNames)
+            {
+                User? mentionnedUser = GetUser(new(mentionnedUserName));
+                if (mentionnedUser is not null)
+                {
+                    mentionnedUser.AddMention(user, message);
+                }
+            }
         }
         private User? GetUser(User user)
         {

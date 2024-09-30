@@ -21,9 +21,9 @@ namespace SocialNetworkKata
         {
             _messages = new List<Message>();
         }
-        public bool AddMessage(string message)
+        public bool AddMessage(Message message)
         {
-            _messages.Add(new Message( message));
+            _messages.Add( message);
             return true;
         }
         

@@ -6,63 +6,92 @@ namespace SocialNetworkKata.Tests
     {
         // Posting: Alice can publish messages to a personal timeline
         SocialNetwork _sut;
+        User _alice;
+        User _bob ;
+        User _charlie;
+        User _mallory;
         public SocialNetworkTests()
         {
             _sut = new SocialNetwork();
+            _alice = new User("Alice");
+            _bob = new User("Bob");
+            _charlie = new User("Charlie");
+            _mallory = new User("Mallory");
+            _sut.AddUser(_alice);
+            _sut.AddUser(_bob);
+            _sut.AddUser(_charlie);
+            _sut.AddUser(_mallory);
         }
         [Fact]
         public void AsAliceShouldPostMessageOnTimeLine()
         {
             string message = "This is a message";
-            User alice = new User("Alice");
-            _sut.AddUser(alice);
-            bool messagePosted = _sut.Post(alice,message);
-            Assert.True(messagePosted);
+            Message messagePosted = _sut.Post(_alice,new Message(message));
+            Assert.NotEmpty(messagePosted.Text);
         }
 
         [Fact]
         public void AsBobShouldReadAlicePostOnTimeLine()
         {
             string message = "This is a message";
-            User alice = new User("Alice");
-            _sut.AddUser(alice);
-            bool messagePosted = _sut.Post(alice, message);
-            Assert.True(messagePosted);
+            
+            Message messagePosted = _sut.Post(_alice, new Message(message));
+            Assert.NotEmpty(messagePosted.Text);
 
-            User bob = new User("Bob");
-            _sut.AddUser(bob);
-            TimeLine aliceTimeLine = _sut.Read(alice);
-            Assert.Contains(message,aliceTimeLine.Messages.Select(m => m.Msg));
+            _sut.AddUser(_bob);
+            TimeLine aliceTimeLine = _sut.Read(_alice);
+            Assert.Contains(message,aliceTimeLine.Messages.Select(m => m.Text));
         }
-
         [Fact]
         public void AsCharlieShouldSubscribeToAliceAndBobTimeLineAndSeeAggregateListOfAllSubscriptions()
         {
             string aliceMessage = "This is Alice Message";
             string bobMessage = "This is Bob message";
-            User alice = new User("Alice");
-            User bob = new User("Bob");
-            User charlie = new User("Charlie");
-            _sut.AddUser(alice);
-            _sut.AddUser(bob);
-            _sut.AddUser(charlie);
+            Message messagePosted = _sut.Post(_alice,new Message(aliceMessage));
+            Assert.NotEmpty(messagePosted.Text);
 
-            bool messagePosted = _sut.Post(alice, aliceMessage);
-            Assert.True(messagePosted);
-            
-            messagePosted = _sut.Post(bob, bobMessage);
-            Assert.True(messagePosted);
+            messagePosted = _sut.Post(_bob, new Message(bobMessage));
+            Assert.NotEmpty(messagePosted.Text);
 
-            
-            bool subscribedToAliceTimeLine = _sut.Follow(charlie, alice);
+
+            bool subscribedToAliceTimeLine = _sut.Follow(_charlie, _alice);
             Assert.True(subscribedToAliceTimeLine);
 
-            bool subscribedToBobTimeLine =  _sut.Follow(charlie, bob);
+            bool subscribedToBobTimeLine = _sut.Follow(_charlie, _bob);
             Assert.True(subscribedToBobTimeLine);
 
             List<TimeLine> subscriptions = new List<TimeLine>();
-            subscriptions = _sut.ListSubscriptions(charlie);
+            subscriptions = _sut.ListSubscriptions(_charlie);
             Assert.Equal(2, subscriptions.Count());
+        }
+
+        [Fact]
+        public void AsBobShouldMentionCharlie()
+        {
+            string bobMessage = "This is Bob message to @Charlie";
+            _sut.Post(_charlie, new Message("testetette"));
+            Message messagePosted = _sut.Post(_bob, new Message(bobMessage));
+            Assert.NotEmpty(messagePosted.Text);
+
+            Assert.Single(_charlie.Mentions);
+        }
+
+        [Fact]
+        public void AsBobShouldAddClickableLinksToMessage()
+        {
+            string bobMessage = "This is Bob message <a href=\"https:\\\\google.fr\"></a>";
+            Message messagePosted = _sut.Post(_bob, new Message(bobMessage));
+            Assert.NotEmpty(messagePosted.Text);
+
+            Assert.Single(messagePosted.Links);
+        }
+
+        [Fact]
+        public void AsMalloryShouldSendPrivateMessageToAlice()
+        {
+            string malloryMessage = "Hi Alice, this is private between us";
+             _sut.DirectMessage(_mallory,_alice, new Message(malloryMessage));
+            Assert.Single(_alice.PrivateMessages);
         }
     }
 }
