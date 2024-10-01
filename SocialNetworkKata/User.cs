@@ -14,26 +14,29 @@ namespace SocialNetworkKata
         public User(string name)
         {
             Name = name;
-            TimeLine = new(this);
+            TimeLine = new();
+            _followedUsers = new List<User>();
+            _privateMessages = new List<Message>();
+            _mentions = new List<Message>();
         }
-        public TimeLine TimeLine { get;} 
+        public TimeLine TimeLine { get;}
 
-        private List<User> _followedUsers { get; set; } = new();
+        private List<User> _followedUsers;
         public IReadOnlyCollection<User> FollowedUsers
         {
             get => _followedUsers.ToImmutableList();
             private set => _followedUsers = value.ToList();
         }
 
-        private List<PrivateMessage> _privateMessages { get; set; } = new();
-        public IReadOnlyCollection<PrivateMessage> PrivateMessages
+        private List<Message> _privateMessages;
+        public IReadOnlyCollection<Message> PrivateMessages
         {
             get => _privateMessages.ToImmutableList();
             private set => _privateMessages = value.ToList();
         }
 
-        private List<Mention> _mentions { get; set; } = new();
-        public IReadOnlyCollection<Mention> Mentions
+        private List<Message> _mentions;
+        public IReadOnlyCollection<Message> Mentions
         {
             get => _mentions.ToImmutableList();
             private set => _mentions = value.ToList();
@@ -48,17 +51,17 @@ namespace SocialNetworkKata
             }
         }
 
-        public void AddPrivateMessage(User person,Message message)
+        public void AddPrivateMessage(Message message)
         {
-            _privateMessages.Add(new(person, message));
+            _privateMessages.Add(message);
         }
         public bool Post(Message message)
         {
             return TimeLine.AddMessage(message);
         }
-        public void AddMention(User user,Message message)
+        public void AddMention(Message message)
         {
-            _mentions.Add(new(user, message));
+            _mentions.Add(message);
         }
     }
 }

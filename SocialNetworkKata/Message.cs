@@ -24,9 +24,11 @@ namespace SocialNetworkKata
             private set => _links = value.ToList();
         }
 
+        public User Owner { get; }
         public string Text { get; }
-        public Message(string message)
+        public Message(User owner,string message)
         {
+            Owner = owner;
             Text = message;
             GetMentionnedUsers();
             GetLinks();

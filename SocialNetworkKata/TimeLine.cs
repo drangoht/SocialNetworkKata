@@ -9,7 +9,8 @@ namespace SocialNetworkKata
 {
     public class TimeLine
     {
-        private List<Message> _messages { get; set; } = new();
+        private List<Message> _messages;
+
         public IReadOnlyCollection<Message> Messages
         {
             get => _messages.ToImmutableList();
@@ -17,7 +18,7 @@ namespace SocialNetworkKata
         }
 
 
-        public TimeLine(User owner)
+        public TimeLine()
         {
             _messages = new List<Message>();
         }

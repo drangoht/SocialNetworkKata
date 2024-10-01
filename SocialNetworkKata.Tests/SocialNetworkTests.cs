@@ -26,7 +26,7 @@ namespace SocialNetworkKata.Tests
         public void AsAliceShouldPostMessageOnTimeLine()
         {
             string message = "This is a message";
-            Message messagePosted = _sut.Post(_alice,new Message(message));
+            Message messagePosted = _sut.Post(new Message(_alice,message));
             Assert.NotEmpty(messagePosted.Text);
         }
 
@@ -35,7 +35,7 @@ namespace SocialNetworkKata.Tests
         {
             string message = "This is a message";
             
-            Message messagePosted = _sut.Post(_alice, new Message(message));
+            Message messagePosted = _sut.Post(new Message(_alice,message));
             Assert.NotEmpty(messagePosted.Text);
 
             _sut.AddUser(_bob);
@@ -47,10 +47,10 @@ namespace SocialNetworkKata.Tests
         {
             string aliceMessage = "This is Alice Message";
             string bobMessage = "This is Bob message";
-            Message messagePosted = _sut.Post(_alice,new Message(aliceMessage));
+            Message messagePosted = _sut.Post(new Message(_alice,aliceMessage));
             Assert.NotEmpty(messagePosted.Text);
 
-            messagePosted = _sut.Post(_bob, new Message(bobMessage));
+            messagePosted = _sut.Post(new Message(_bob,bobMessage));
             Assert.NotEmpty(messagePosted.Text);
 
 
@@ -69,8 +69,8 @@ namespace SocialNetworkKata.Tests
         public void AsBobShouldMentionCharlie()
         {
             string bobMessage = "This is Bob message to @Charlie";
-            _sut.Post(_charlie, new Message("testetette"));
-            Message messagePosted = _sut.Post(_bob, new Message(bobMessage));
+            _sut.Post(new Message(_charlie,"testetette"));
+            Message messagePosted = _sut.Post(new Message(_bob, bobMessage));
             Assert.NotEmpty(messagePosted.Text);
 
             Assert.Single(_charlie.Mentions);
@@ -80,7 +80,7 @@ namespace SocialNetworkKata.Tests
         public void AsBobShouldAddClickableLinksToMessage()
         {
             string bobMessage = "This is Bob message <a href=\"https:\\\\google.fr\"></a>";
-            Message messagePosted = _sut.Post(_bob, new Message(bobMessage));
+            Message messagePosted = _sut.Post(new Message(_bob, bobMessage));
             Assert.NotEmpty(messagePosted.Text);
 
             Assert.Single(messagePosted.Links);
@@ -90,7 +90,7 @@ namespace SocialNetworkKata.Tests
         public void AsMalloryShouldSendPrivateMessageToAlice()
         {
             string malloryMessage = "Hi Alice, this is private between us";
-             _sut.DirectMessage(_mallory,_alice, new Message(malloryMessage));
+             _sut.DirectMessage(_alice, new Message(_mallory,malloryMessage));
             Assert.Single(_alice.PrivateMessages);
         }
     }

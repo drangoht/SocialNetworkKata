@@ -10,7 +10,7 @@ namespace SocialNetworkKata
 {
     public class SocialNetwork
     {
-        private List<User> _users { get; set; } = new();
+        private List<User> _users ;
         public IReadOnlyCollection<User> Users
         {
             get => _users.ToImmutableList();
@@ -19,6 +19,7 @@ namespace SocialNetworkKata
         
         public SocialNetwork()
         {
+            _users = new List<User>();
         }
 
         public void AddUser(User user)
@@ -31,19 +32,19 @@ namespace SocialNetworkKata
             User? user = GetUser(person);
             if (user is null)
             {
-                return new TimeLine(person);
+                return new TimeLine();
             }
             return user.TimeLine;
         }
 
-        public Message Post(User user, Message message)
+        public Message Post( Message message)
         {
-            User? userToPost = GetUser(user);
+            User? userToPost = GetUser(message.Owner);
             if (userToPost is null)
             {
-                return new(string.Empty);
+                return message;
             }
-            Mention(user,message);
+            Mention( message);
             userToPost.Post(message);
             return message;
         }
@@ -70,24 +71,24 @@ namespace SocialNetworkKata
             return userInNetwork.FollowedUsers.Select(f => f.TimeLine).ToList();
         }
 
-        public void DirectMessage(User sender, User receiver, Message message)
+        public void DirectMessage(User receiver, Message message)
         {
             User? userInNetwork = GetUser(receiver);
             if (userInNetwork is null)
             {
                 return;
             }
-            receiver.AddPrivateMessage(sender,message);
+            receiver.AddPrivateMessage(message);
         }
 
-        private void Mention(User user, Message message)
+        private void Mention(Message message)
         {
             foreach (var mentionnedUserName in message.MentionnedUserNames)
             {
                 User? mentionnedUser = GetUser(new(mentionnedUserName));
                 if (mentionnedUser is not null)
                 {
-                    mentionnedUser.AddMention(user, message);
+                    mentionnedUser.AddMention(message);
                 }
             }
         }
