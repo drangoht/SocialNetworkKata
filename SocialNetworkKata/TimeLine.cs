@@ -14,7 +14,6 @@ namespace SocialNetworkKata
         public IReadOnlyCollection<Message> Messages
         {
             get => _messages.ToImmutableList();
-            private set => _messages = value.ToList();
         }
 
 

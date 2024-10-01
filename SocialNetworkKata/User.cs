@@ -25,21 +25,18 @@ namespace SocialNetworkKata
         public IReadOnlyCollection<User> FollowedUsers
         {
             get => _followedUsers.ToImmutableList();
-            private set => _followedUsers = value.ToList();
         }
 
         private List<Message> _privateMessages;
         public IReadOnlyCollection<Message> PrivateMessages
         {
             get => _privateMessages.ToImmutableList();
-            private set => _privateMessages = value.ToList();
         }
 
         private List<Message> _mentions;
         public IReadOnlyCollection<Message> Mentions
         {
             get => _mentions.ToImmutableList();
-            private set => _mentions = value.ToList();
         }
 
 
@@ -63,5 +60,6 @@ namespace SocialNetworkKata
         {
             _mentions.Add(message);
         }
+
     }
 }

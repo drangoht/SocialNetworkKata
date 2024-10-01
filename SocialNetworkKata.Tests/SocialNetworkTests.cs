@@ -93,5 +93,52 @@ namespace SocialNetworkKata.Tests
              _sut.DirectMessage(_alice, new Message(_mallory,malloryMessage));
             Assert.Single(_alice.PrivateMessages);
         }
+
+        [Fact]
+        public void ShouldThrowUserNotFoundInNetworkExceptionWhenPostingWithInexistentUser()
+        {
+            string message = "This is a message";
+            Assert.Throws<UserNotFoundInNetworkException>(() => _sut.Post(new Message(new User("UnknownUser"), message)));
+        }
+
+        [Fact]
+        public void ShouldThrowUserNotFoundInNetworkExceptionWhenSendPrivateMessageWithInexistentUser()
+        {
+            string message = "This is a message";
+            Assert.Throws<UserNotFoundInNetworkException>(() => _sut.DirectMessage(_alice, new Message(new User("UnknownUser"), message)));
+        }
+
+        [Fact]
+        public void ShouldThrowUserNotFoundInNetworkExceptionWhenSendPrivateMessageToInexistentUser()
+        {
+            string message = "This is a message";
+            Assert.Throws<UserNotFoundInNetworkException>(() => _sut.DirectMessage(new User("UnknownUser"), new Message(_alice, message)));
+        }
+
+        [Fact]
+        public void ShouldThrowUserNotFoundInNetworkExceptionWheReadTimeLineFromInexistentUser()
+        {
+            Assert.Throws<UserNotFoundInNetworkException>(() => _sut.Read(new User("UnknownUser")));
+        }
+
+        [Fact]
+        public void ShouldThrowUserNotFoundInNetworkExceptionWhenFollowInexistentUser()
+        {
+            string message = "This is a message";
+            Assert.Throws<UserNotFoundInNetworkException>(() => _sut.Follow(_alice,new User("UnknownUser")));
+        }
+        [Fact]
+        public void ShouldThrowUserNotFoundInNetworkExceptionWhenFollowFromInexistentUser()
+        {
+            string message = "This is a message";
+            Assert.Throws<UserNotFoundInNetworkException>(() => _sut.Follow(new User("UnknownUser"), _alice));
+        }
+
+        [Fact]
+        public void ShouldThrowUserNotFoundInNetworkExceptionWhenListingSubscriptionsFromInexistentUser()
+        {
+            string message = "This is a message";
+            Assert.Throws<UserNotFoundInNetworkException>(() => _sut.ListSubscriptions(new User("UnknownUser")));
+        }
     }
 }

@@ -11,11 +11,6 @@ namespace SocialNetworkKata
     public class SocialNetwork
     {
         private List<User> _users ;
-        public IReadOnlyCollection<User> Users
-        {
-            get => _users.ToImmutableList();
-            private set => _users = value.ToList();
-        }
         
         public SocialNetwork()
         {
@@ -29,54 +24,65 @@ namespace SocialNetworkKata
 
         public TimeLine Read(User person)
         {
-            User? user = GetUser(person);
-            if (user is null)
+            if (!UserExistInNetwork(person))
             {
-                return new TimeLine();
+                throw new UserNotFoundInNetworkException(person);
             }
+
+            User user = GetNetworkUser(person);
             return user.TimeLine;
         }
 
         public Message Post( Message message)
         {
-            User? userToPost = GetUser(message.Owner);
-            if (userToPost is null)
+            if (!UserExistInNetwork(message.Owner))
             {
-                return message;
+                throw new UserNotFoundInNetworkException(message.Owner);
             }
+            
+            User user = GetNetworkUser(message.Owner);
             Mention( message);
-            userToPost.Post(message);
+            user.Post(message);
             return message;
         }
         
 
         public bool Follow(User follower, User followed)
         {
-            User? user = GetUser(followed);
-            if (user is null)
+            if (!UserExistInNetwork(followed))
             {
-                return false;
+                throw new UserNotFoundInNetworkException(followed);
             }
+            if (!UserExistInNetwork(follower))
+            {
+                throw new UserNotFoundInNetworkException(follower);
+            }
+
+            User user = GetNetworkUser(followed);
             follower.AddSubscription(followed);
             return true;
         }
 
         public List<TimeLine> ListSubscriptions(User user)
         {
-            User? userInNetwork = GetUser(user);
-            if (userInNetwork is null)
+            if (!UserExistInNetwork(user))
             {
-                return new();
+                throw new UserNotFoundInNetworkException(user);
             }
+
+            User userInNetwork = GetNetworkUser(user);
             return userInNetwork.FollowedUsers.Select(f => f.TimeLine).ToList();
         }
 
         public void DirectMessage(User receiver, Message message)
         {
-            User? userInNetwork = GetUser(receiver);
-            if (userInNetwork is null)
+            if (!UserExistInNetwork(receiver))
             {
-                return;
+                throw new UserNotFoundInNetworkException(receiver);
+            }
+            if (!UserExistInNetwork(message.Owner))
+            {
+                throw new UserNotFoundInNetworkException(message.Owner);
             }
             receiver.AddPrivateMessage(message);
         }
@@ -85,16 +91,18 @@ namespace SocialNetworkKata
         {
             foreach (var mentionnedUserName in message.MentionnedUserNames)
             {
-                User? mentionnedUser = GetUser(new(mentionnedUserName));
-                if (mentionnedUser is not null)
+                var mentionnedUser = new User(mentionnedUserName);
+                if (UserExistInNetwork(mentionnedUser))
                 {
-                    mentionnedUser.AddMention(message);
+                    User mentionnedUserInNetwork = GetNetworkUser(new(mentionnedUserName));
+                    mentionnedUserInNetwork.AddMention(message);
                 }
             }
         }
-        private User? GetUser(User user)
-        {
-            return _users.FirstOrDefault(u => u.Name == user.Name);
-        }
+        private bool UserExistInNetwork(User user) =>
+            _users.Any(u => u.Name == user.Name) ;
+        private User GetNetworkUser(User user) => 
+            _users.First(u => u.Name == user.Name);
+        
     }
 }

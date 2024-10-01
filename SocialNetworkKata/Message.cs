@@ -10,18 +10,16 @@ namespace SocialNetworkKata
 {
     public class Message
     {
-        private List<string> _mentionnedUserNames { get; set; } = new();
+        private List<string> _mentionnedUserNames;
         public IReadOnlyCollection<string> MentionnedUserNames
         {
             get => _mentionnedUserNames.ToImmutableList();
-            private set => _mentionnedUserNames = value.ToList();
         }
-    
-        private List<string> _links { get; set; } = new();
+
+        private List<string> _links;
         public IReadOnlyCollection<string> Links
         {
             get => _links.ToImmutableList();
-            private set => _links = value.ToList();
         }
 
         public User Owner { get; }
@@ -30,6 +28,9 @@ namespace SocialNetworkKata
         {
             Owner = owner;
             Text = message;
+            _links = new List<string>();
+            _mentionnedUserNames= new List<string>();
+
             GetMentionnedUsers();
             GetLinks();
         }
